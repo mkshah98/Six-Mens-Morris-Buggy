@@ -12,7 +12,7 @@ TEST(SixMensMorrisBoardTest, DefaultBoardTest){
     EXPECT_EQ(EmptyBoard.UnplacedPieces(SIX_MENS_MORRIS_PLAYER_W), SIX_MENS_MORRIS_PIECES);
     EXPECT_FALSE(EmptyBoard.GameOver());
     EXPECT_EQ(EmptyBoard.ToString(),">RU:6 RC:0  WU:6 WC:0\n" 
-                                    "o---------o---------o u     0---1---2\n" 
+                                    "o---------o---------o      0---1---2\n" 
                                     "|         |         |      | 3-4-5 |\n"
                                     "|         |         |      6-7   8-9\n"
                                     "|    o----o----o    |      | A-B-C |\n"
@@ -229,8 +229,8 @@ TEST(SixMensMorrisBoardTest, MoveTest){
     //canmove, then move
 
     //check player at the position, expect player u just moved. R 11 -> 12, call player @ pos 12, = r.
-    EXPECT_EQ(board.PlayeratPosition(0), SIX_MENS_MORRIS_PLAYER_R); //see what player is at pos 0
-    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,0)); // ^if that went through, then we will expect true if we can move it one down.
+    EXPECT_EQ(board.PlayerAtPosition(0), SIX_MENS_MORRIS_PLAYER_R); //see what player is at pos 0
+    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,6)); // ^if that went through, then we will expect true if we can move it one down.
     EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_R,0,6)); //move it to pos 6
     
     //move R (red turn), expect next turn = W
@@ -243,17 +243,17 @@ TEST(SixMensMorrisBoardTest, MoveTest){
 
     //see if you can move distant place movig 3 -> 15 b/c u cant fly so it should be expect_false.
     //if player turn is R, but W is trying to move. expect_false
-    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_R,15,13); //fly from 16th pos, to 14th pos. should be false
-    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_W,8,0); //fly from 9th pos to 1st pos
+    EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,13)); //fly from 16th pos, to 14th pos. should be false
+    EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,0)); //fly from 9th pos to 1st pos
 
     //3rd test, canmove == false, cannmove 
     //some canmoves work = true, some canmoves don't work = false.
 
-    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,6));
+    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,7));
     EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_R,6,7)); //move from 6 to 7
 
     EXPECT_EQ(board.ToString(),
-                                    " RU:2 RC:1 >WU:3 WC:0\n" 
+                                    ">RU:0 RC:3  WU:0 WC:3\n" 
                                     "o---------W---------o      0---1---2\n" 
                                     "|         |         |      | 3-4-5 |\n"
                                     "|         |         |      6-7   8-9\n"
@@ -267,7 +267,6 @@ TEST(SixMensMorrisBoardTest, MoveTest){
                                     "|         |         |\n"
                                     "|         |         |\n"
                                     "o---------o---------R\n");
-}
 }
 
 TEST(SixMensMorrisBoardTest, MoveMillTest){
@@ -366,7 +365,7 @@ TEST(SixMensMorrisBoardTest, NoMoveGameOverTest){
     EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,1));
     EXPECT_TRUE(board.GameOver());
     EXPECT_EQ(board.ToString(),
-                                    " RU:0 RC:3 WU:0 WC:3\n" 
+                                    " RU:0 RC:3  WU:0 WC:3\n" 
                                     "W---------R---------R      0---1---2\n" 
                                     "|         |         |      | 3-4-5 |\n"
                                     "|         |         |      6-7   8-9\n"
