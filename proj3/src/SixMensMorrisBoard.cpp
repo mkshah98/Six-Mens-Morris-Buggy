@@ -107,8 +107,46 @@ int CSixMensMorrisBoard::UnplacedPieces(char player) const{
 
 //Checks if game is over
 bool CSixMensMorrisBoard::GameOver() const{
-       return DTurn != SIX_MENS_MORRIS_PLAYER_R and DTurn != SIX_MENS_MORRIS_PLAYER_W;
+    if(DUnplacedPieces > 0){
+        return false;
+    } 
+    else{
+        return DTurn != SIX_MENS_MORRIS_PLAYER_R or DTurn != SIX_MENS_MORRIS_PLAYER_W;
+    }
+    
+    auto NewTurn = DTurn;
+    char OtherPlayer = DTurn == SIX_MENS_MORRIS_PLAYER_R ? SIX_MENS_MORRIS_PLAYER_W : SIX_MENS_MORRIS_PLAYER_R;
+    bool HasMove = false;
+    for(int From = 0; From < SIX_MENS_MORRIS_POSITIONS; From++){
+        if(DPositions[From] == OtherPlayer){
+            for(int To = 0; To < SIX_MENS_MORRIS_POSITIONS; To++){
+                if(From == To){
+                    continue;    
+                    }
+                if((SIX_MENS_MORRIS_EMPTY == DPositions[To]) and AdjacentPositions(From,To)){
+                    HasMove = true;
+                        break;
+                    }
+                }
+                if(HasMove){
+                    break;   
+                }
+            }       
+        }
+    
+    if(HasMove){
+        NewTurn = OtherPlayer;
+    }
+    else if (NewTurn = tolower(DTurn)){
+        return true;
+    }   
+    
+    
+    return false;
+    
+    
 }
+
 
 //Returns the game as a string
 std::string CSixMensMorrisBoard::ToString() const{
@@ -123,8 +161,8 @@ std::string CSixMensMorrisBoard::ToString() const{
         }
         else if(DPositions[Index] == SIX_MENS_MORRIS_PLAYER_W){
             CapturedW--;   
-        } 
-    }
+        }
+    } 
     OutStream<<(DTurn == SIX_MENS_MORRIS_PLAYER_R ? ">RU:" : " RU:")<<DUnplacedPieces[0]<<" RC:"<<CapturedW<<(DTurn == SIX_MENS_MORRIS_PLAYER_W ? " >WU:" : "  WU:")<<DUnplacedPieces[1]<<" WC:"<<CapturedR<<std::endl;
     OutStream<<DPositions[0x0]<<"---------"<<DPositions[0x1]<<"---------"<<DPositions[0x2]<<"      0---1---2"<<std::endl;
     OutStream<<"|         |         |      | 3-4-5 |"<<std::endl;
@@ -142,6 +180,7 @@ std::string CSixMensMorrisBoard::ToString() const{
     
     return OutStream.str();
 }
+
 
 //return ToSring()
 CSixMensMorrisBoard::operator std::string() const{
@@ -244,6 +283,8 @@ bool CSixMensMorrisBoard::Move(char player, int from, int to){
     }
     return false;
 }
+
+
 
 //Removes opponent from 'from.' returns false if 'from' is empty or if from contains player's piece
 // or if from is invalid
