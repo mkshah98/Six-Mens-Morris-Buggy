@@ -1,5 +1,6 @@
 #include <gtest/gtest.h> 	  			 	 
 #include "SixMensMorrisBoard.h"
+#include <iostream>
 
 TEST(SixMensMorrisBoardTest, DefaultBoardTest){
     CSixMensMorrisBoard EmptyBoard;
@@ -230,28 +231,28 @@ TEST(SixMensMorrisBoardTest, MoveTest){
 
     //check player at the position, expect player u just moved. R 11 -> 12, call player @ pos 12, = r.
     EXPECT_EQ(board.PlayerAtPosition(0), SIX_MENS_MORRIS_PLAYER_R); //see what player is at pos 0
-    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,6)); // ^if that went through, then we will expect true if we can move it one down.
+    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,0)); // ^if that went through, then we will expect true if we can move it one down.
     EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_R,0,6)); //move it to pos 6
     
     //move R (red turn), expect next turn = W
     EXPECT_EQ(board.PlayerTurn(), SIX_MENS_MORRIS_PLAYER_W);
 
     //checking if you can move a white piece
-    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,8));
+    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,9));
     EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_W,9,8)); //move from W from 9 to 8. shift left
 
 
     //see if you can move distant place movig 3 -> 15 b/c u cant fly so it should be expect_false.
     //if player turn is R, but W is trying to move. expect_false
-    EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,13)); //fly from 16th pos, to 14th pos. should be false
-    EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,0)); //fly from 9th pos to 1st pos
+    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,15)); 
+    EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_R, 15, 14));
+    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_R,14,15)); // Cannot move since not R's turn 
 
     //3rd test, canmove == false, cannmove 
     //some canmoves work = true, some canmoves don't work = false.
-
-    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,7));
-    EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_R,6,7)); //move from 6 to 7
-
+    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,8));
+    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_R,8,10)); //Cannot fly from 8 to 10 and not R's turn
+    EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_W, 8,12));
     EXPECT_EQ(board.ToString(),
                                     ">RU:0 RC:3  WU:0 WC:3\n" 
                                     "o---------W---------o      0---1---2\n" 
@@ -260,13 +261,13 @@ TEST(SixMensMorrisBoardTest, MoveTest){
                                     "|    o----o----R    |      | A-B-C |\n"
                                     "|    |         |    |      D---E---F\n"
                                     "|    |         |    |        LEGEND\n"
-                                    "o----R         W----o\n"
+                                    "R----o         o----o\n"
                                     "|    |         |    |\n"
                                     "|    |         |    |\n"
-                                    "|    o----W----o    |\n"
+                                    "|    o----W----W    |\n"
                                     "|         |         |\n"
                                     "|         |         |\n"
-                                    "o---------o---------R\n");
+                                    "o---------R---------o\n");
 }
 
 TEST(SixMensMorrisBoardTest, MoveMillTest){
@@ -284,8 +285,9 @@ TEST(SixMensMorrisBoardTest, MoveMillTest){
                                                         SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_PLAYER_W,SIX_MENS_MORRIS_PLAYER_W,
                                                         SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_PLAYER_W};
     CSixMensMorrisBoard board(player, unplaced, positions, previous);
-    EXPECT_TRUE(board.CanMove(player, 0));
+    EXPECT_TRUE(board.CanMove(player, 6));
     EXPECT_TRUE(board.Move(player, 6, 0));
+    std::cout<<player<<std::endl;   // R's turn, testing correctly
     EXPECT_TRUE(board.CanRemove(player));
     EXPECT_TRUE(board.Remove(SIX_MENS_MORRIS_PLAYER_W, 15));
     EXPECT_EQ(board.ToString(), " RU:0 RC:3 >WU:0 WC:2\n" 
@@ -320,12 +322,12 @@ TEST(SixMensMorrisBoardTest, TwoPieceGameOverTest){
                                                         SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_PLAYER_R};
     CSixMensMorrisBoard board(player, unplaced, positions, previous);
     EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W, 11));
-    EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_W,12,11));
+    EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_W,11,10));
     EXPECT_TRUE(board.CanRemove(SIX_MENS_MORRIS_PLAYER_W));
-    EXPECT_TRUE(board.Remove(SIX_MENS_MORRIS_PLAYER_R,SIX_MENS_MORRIS_POSITIONS-1));
+    EXPECT_TRUE(board.Remove(SIX_MENS_MORRIS_PLAYER_W,15));
     EXPECT_TRUE(board.GameOver());
     EXPECT_EQ(board.ToString(),
-                                    " RU:0 RC:3  WU:0 WC:4\n" 
+                                    " RU:0 RC:3 >WU:0 WC:4\n" 
                                     "R---------o---------R      0---1---2\n" 
                                     "|         |         |      | 3-4-5 |\n"
                                     "|         |         |      6-7   8-9\n"
@@ -355,17 +357,15 @@ TEST(SixMensMorrisBoardTest, NoMoveGameOverTest){
                                                         SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_EMPTY,
                                                         SIX_MENS_MORRIS_EMPTY,SIX_MENS_MORRIS_PLAYER_W,SIX_MENS_MORRIS_PLAYER_R};
     CSixMensMorrisBoard board(turn, unplaced, positions, previous);
-    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,14));
+    EXPECT_TRUE(board.CanMove(turn, 14));
     EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_W,14,15)); // on board 15 to 16
     
     EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,1));
     EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,2));
     EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,9));
-
-    EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,1));
-    EXPECT_FALSE(board.GameOver()); //change it to true if you want to see it fail on the make, everything works but this one part <--
+    EXPECT_TRUE(board.GameOver());
     EXPECT_EQ(board.ToString(),
-                                    ">RU:0 RC:2  WU:0 WC:3\n" 
+                                    " RU:0 RC:2 >WU:0 WC:3\n" 
                                     "W---------R---------R      0---1---2\n" 
                                     "|         |         |      | 3-4-5 |\n"
                                     "|         |         |      6-7   8-9\n"
@@ -380,20 +380,6 @@ TEST(SixMensMorrisBoardTest, NoMoveGameOverTest){
                                     "|         |         |\n"
                                     "o---------o---------W\n");
 }
-
-
-
-
-/* what i should
-\nW---------R---------R       
- o----W----o    |  
- o----o   W----R\n|   
-  o----o----o    |\n|     
-  |\no---------o---------W\n"
-*/
-
-
-
 
 TEST(SixMensMorrisBoardTest, BadParametersTest){
     // done and good
