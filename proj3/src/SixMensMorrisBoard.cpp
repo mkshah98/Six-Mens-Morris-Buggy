@@ -61,7 +61,7 @@ bool CSixMensMorrisBoard::MillCreated(char player){
 }
 
 bool CSixMensMorrisBoard::AdjacentPositions(int from, int to){
-    int Adjacents[SIX_MENS_MORRIS_POSITIONS] = {0x000A, 0x0015, 0x0202, 0x0090,             //
+    int Adjacents[SIX_MENS_MORRIS_POSITIONS] = {0x0042, 0x0015, 0x0202, 0x0090,             //
                                                 0x002A, 0x0110, 0x2081, 0x0448,
                                                 0x1220, 0x8104, 0x0880, 0x5400,
                                                 0x0900, 0x4040, 0xA800, 0x4200};
@@ -107,7 +107,18 @@ int CSixMensMorrisBoard::UnplacedPieces(char player) const{
 
 //Checks if game is over
 bool CSixMensMorrisBoard::GameOver() const{
-       return DTurn != SIX_MENS_MORRIS_PLAYER_R and DTurn != SIX_MENS_MORRIS_PLAYER_W;
+    int RCount = 0, WCount = 0;
+    for(int i = 0; i < SIX_MENS_MORRIS_POSITIONS; i++){
+        if(PlayerAtPosition(i) == SIX_MENS_MORRIS_PLAYER_R){
+            RCount++;
+        } else if(PlayerAtPosition(i) == SIX_MENS_MORRIS_PLAYER_W){
+            WCount++;
+        }
+    }
+    if ((RCount == 2 and DUnplacedPieces[0] == 0) or (WCount == 2 and DUnplacedPieces[1] == 0)){
+        return true;
+    }
+    return false;
 }
 
 //Returns the game as a string
@@ -230,13 +241,22 @@ bool CSixMensMorrisBoard::Move(char player, int from, int to){
             if(player == DPositions[from]){
                 if((0 <= to) and (to < SIX_MENS_MORRIS_POSITIONS) and (SIX_MENS_MORRIS_EMPTY ==  DPositions[to]) and AdjacentPositions(from, to)){
                     DPositions[to] = player;
-                    if(MillCreated(player)){
-                    DTurn = player;
-                }
                     DPositions[from] = SIX_MENS_MORRIS_EMPTY;
-                    if(not (MillCreated(player) or GameOver())){
-                        DTurn = DTurn == SIX_MENS_MORRIS_PLAYER_R ? SIX_MENS_MORRIS_PLAYER_W : SIX_MENS_MORRIS_PLAYER_R;
+                    DPreviousPositions[to] = DPositions[from];
+                    DPreviousPositions[from] = SIX_MENS_MORRIS_EMPTY;
+                    std::cout<<"Mill about to be created"<<std::endl;
+                    if(MillCreated(player)){
+                        std::cout<<"mill created for player "<<player<<std::endl;
+                        DTurn = player;
+                    } else{
+                    DTurn = DTurn == SIX_MENS_MORRIS_PLAYER_W ? SIX_MENS_MORRIS_PLAYER_R: SIX_MENS_MORRIS_PLAYER_W;
                     }
+
+                    return true;
+                }
+                else{
+                    GameOver();
+                    DTurn = DTurn == SIX_MENS_MORRIS_PLAYER_R ? SIX_MENS_MORRIS_PLAYER_R : SIX_MENS_MORRIS_PLAYER_W;
                     return true;
                 }
             }
@@ -261,7 +281,7 @@ bool CSixMensMorrisBoard::Remove(char player, int from){
                 }
             }
             if(PlayerCount <= 2){
-                DTurn = tolower(DTurn);
+                GameOver();
                 return true;// game could be over
             }
             bool HasMove = false;
