@@ -61,7 +61,7 @@ bool CSixMensMorrisBoard::MillCreated(char player){
 }
 
 bool CSixMensMorrisBoard::AdjacentPositions(int from, int to){
-    int Adjacents[SIX_MENS_MORRIS_POSITIONS] = {0x000A, 0x0015, 0x0202, 0x0090,             //
+    int Adjacents[SIX_MENS_MORRIS_POSITIONS] = {0x0042, 0x0015, 0x0202, 0x0090,             //
                                                 0x002A, 0x0110, 0x2081, 0x0448,
                                                 0x1220, 0x8104, 0x0880, 0x5400,
                                                 0x0900, 0x4040, 0xA800, 0x4200};
