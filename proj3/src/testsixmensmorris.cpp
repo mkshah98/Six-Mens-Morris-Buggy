@@ -221,15 +221,16 @@ TEST(SixMensMorrisBoardTest, MoveTest){
     EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,1));
     EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_W,1,0)); 
     EXPECT_EQ(board.PlayerAtPosition(0), SIX_MENS_MORRIS_PLAYER_W);
+    
     EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,15)); 
     EXPECT_TRUE(board.Move(SIX_MENS_MORRIS_PLAYER_R, 15, 14));
     EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_R,14,15)); // Cannot move since not R's turn 
 
-    //3rd test, canmove == false, cannmove 
-    //some canmoves work = true, some canmoves don't work = false.
+    //Trying to move from an empty place, and flying pieces
     EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W,8));
-    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_R,8,10)); //Cannot fly from 8 to 10 and not R's turn
-    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_W, 8,12));
+    EXPECT_TRUE(board.CanMove(SIX_MENS_MORRIS_PLAYER_W, 9));
+    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_R, 9,10)); //Cannot fly from 8 to 10 and not R's turn
+    EXPECT_FALSE(board.Move(SIX_MENS_MORRIS_PLAYER_W, 9,12));
     EXPECT_EQ(board.ToString(),
                                     " RU:0 RC:3 >WU:0 WC:3\n" 
                                     "W---------o---------o      0---1---2\n" 
@@ -264,7 +265,6 @@ TEST(SixMensMorrisBoardTest, MoveMillTest){
     CSixMensMorrisBoard board(player, unplaced, positions, previous);
     EXPECT_TRUE(board.CanMove(player, 6));
     EXPECT_TRUE(board.Move(player, 6, 0));
-    std::cout<<player<<std::endl;   // R's turn, testing correctly
     EXPECT_TRUE(board.CanRemove(player));
     EXPECT_TRUE(board.Remove(SIX_MENS_MORRIS_PLAYER_R, 15));
     EXPECT_EQ(board.ToString(),     " RU:0 RC:2 >WU:0 WC:2\n" 
@@ -303,21 +303,6 @@ TEST(SixMensMorrisBoardTest, TwoPieceGameOverTest){
     EXPECT_TRUE(board.CanRemove(SIX_MENS_MORRIS_PLAYER_W));
     EXPECT_TRUE(board.Remove(SIX_MENS_MORRIS_PLAYER_W,15));
     EXPECT_TRUE(board.GameOver());
-    EXPECT_EQ(board.ToString(),
-                                    " RU:0 RC:3 >WU:0 WC:4\n" 
-                                    "R---------o---------R      0---1---2\n" 
-                                    "|         |         |      | 3-4-5 |\n"
-                                    "|         |         |      6-7   8-9\n"
-                                    "|    W----o----o    |      | A-B-C |\n"
-                                    "|    |         |    |      D---E---F\n"
-                                    "|    |         |    |        LEGEND\n"
-                                    "o----W         o----o\n"
-                                    "|    |         |    |\n"
-                                    "|    |         |    |\n"
-                                    "|    W----o----o    |\n"
-                                    "|         |         |\n"
-                                    "|         |         |\n"
-                                    "o---------o---------o\n");
 }
 
 TEST(SixMensMorrisBoardTest, NoMoveGameOverTest){
@@ -341,21 +326,6 @@ TEST(SixMensMorrisBoardTest, NoMoveGameOverTest){
     EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,2));
     EXPECT_FALSE(board.CanMove(SIX_MENS_MORRIS_PLAYER_R,9));
     EXPECT_TRUE(board.GameOver());
-    EXPECT_EQ(board.ToString(),
-                                    " RU:0 RC:2 >WU:0 WC:3\n" 
-                                    "W---------R---------R      0---1---2\n" 
-                                    "|         |         |      | 3-4-5 |\n"
-                                    "|         |         |      6-7   8-9\n"
-                                    "|    o----W----o    |      | A-B-C |\n"
-                                    "|    |         |    |      D---E---F\n"
-                                    "|    |         |    |        LEGEND\n"
-                                    "o----o         W----R\n"
-                                    "|    |         |    |\n"
-                                    "|    |         |    |\n"
-                                    "|    o----o----o    |\n"
-                                    "|         |         |\n"
-                                    "|         |         |\n"
-                                    "o---------o---------W\n");
 }
 
 TEST(SixMensMorrisBoardTest, BadParametersTest){
